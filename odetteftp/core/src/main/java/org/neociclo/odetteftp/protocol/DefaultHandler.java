@@ -645,6 +645,7 @@ public abstract class DefaultHandler implements ProtocolHandler {
         FileChannel fileChannel = null;
         try {
             fileChannel = (new FileInputStream(normalizedVirtualFile.getFile())).getChannel();
+            setSessionFileChannel(session, fileChannel);
         } catch (FileNotFoundException e) {
 
             LOGGER.error("[" + session + "] Send File failed. Cannot open file specified in the Virtual File: "
@@ -675,7 +676,7 @@ public abstract class DefaultHandler implements ProtocolHandler {
                     } else {
                         fileChannel.position(fileOffset);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
     
                     String restartFailedText = "Cannot truncate/position file to restart at: " + fileOffset;
                     LOGGER.error("[" + session + "] SFPA received. Send File failed. " + restartFailedText, e);
@@ -689,8 +690,6 @@ public abstract class DefaultHandler implements ProtocolHandler {
             }
 
         }
-
-        setSessionFileChannel(session, fileChannel);
 
         // Allocate data buffer in memory to keep in session
         DataExchangeBuffer dataBuffer = new DataExchangeBuffer(session.getDataBufferSize());
